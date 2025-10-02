@@ -25,7 +25,7 @@ multi_config_dir=${multi_config_dir//\"/}
 echo "multi_config dir: $multi_config_dir"
 
 ########################################################################
-# Create output directories
+# Create output directoriescds 
 module_dir="${rootdir}/analyses/cellranger-analysis"
 results_dir="${module_dir}/results"
 logs_dir="${results_dir}/01_logs"
