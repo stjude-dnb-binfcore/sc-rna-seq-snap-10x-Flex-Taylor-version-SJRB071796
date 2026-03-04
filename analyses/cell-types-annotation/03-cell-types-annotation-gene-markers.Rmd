@@ -1,5 +1,5 @@
 ---
-title: "Cell types annotation using a list of gene-markers as a reference for sc-/sn-RNA-Seq Analysis in 10X Flex Genomics data"
+title: "Cell types annotation using a list of gene-markers as a reference for sc-/sn-RNA-Seq Analysis in 10X Genomics data"
 author: "Antonia Chroni for SJCRH DNB_BINF_Core"
 papersize: a4
 fontsize: 11pt
@@ -51,7 +51,6 @@ params:
   genome_name: '.'
   clustering_gene_markers_dir: '.'
   clustering_gene_markers_file_name: '.'
-  gene_name_convention_update: '.'
   resolution: '.'
   root_dir: './'
   PROJECT_NAME: '.'
@@ -213,7 +212,6 @@ seurat_obj <- calculate_cell_type_signature(seurat_obj = seurat_obj,
                                             plots_dir = plots_dir, 
                                             gene_markers_df = marker_list, 
                                             genome_name = genome_name,
-                                            gene_name_convention_update = gene_name_convention_update,
                                             assay = assay, 
                                             resolution = resolution)
 

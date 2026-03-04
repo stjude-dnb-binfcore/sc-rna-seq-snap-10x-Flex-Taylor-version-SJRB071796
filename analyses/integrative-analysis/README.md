@@ -1,4 +1,4 @@
-# Pipeline for Integrative analysis for sc-/sn-RNA-Seq Analysis in 10X Flex Genomics data
+# Pipeline for Integrative analysis for sc-/sn-RNA-Seq Analysis in 10X Genomics data
 
 ## Usage
 
