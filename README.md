@@ -164,7 +164,6 @@ bash launch_full_pipeline.sh
 
 ```
 ├── analyses
-|  ├── cell-contamination-removal-analysis
 |  ├── cell-types-annotation
 |  ├── cellranger-analysis
 |  ├── cluster-cell-calling
