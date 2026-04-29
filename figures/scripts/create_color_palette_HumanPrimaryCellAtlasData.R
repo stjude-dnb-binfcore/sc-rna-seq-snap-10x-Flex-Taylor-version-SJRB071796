@@ -1,4 +1,4 @@
-# Create color palettes for `sc-rna-seq-snap` repo
+# Create color palettes for the repo
 # Antonia Chroni <antonia.chroni@stjude.org> for DNB Bioinformatics Core Analysis Team
 #
 # Usage:
