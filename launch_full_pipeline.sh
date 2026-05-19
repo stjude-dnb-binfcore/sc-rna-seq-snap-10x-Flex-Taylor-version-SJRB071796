@@ -20,9 +20,10 @@
 #       C: Upstream analysis
 #       D: Integrative analysis
 #       E: Cluster cell calling
-#       F: Cell types annotation
-#       G: DE GO analysis
-#       H: R/Shiny app packaging
+#       F: Remove contamination
+#       G: Cell types annotation
+#       H: DE GO analysis
+#       I: R/Shiny app packaging
 #   • Optional per-step execution via RUN_* flags.
 #   • Adaptive dependencies: each enabled step depends on the last enabled predecessor.
 #   • LSF email notifications with a single NOTIFY_EMAIL value for all jobs.
@@ -91,9 +92,10 @@ RUN_CELLRANGER=1            # B: CellRanger: `cellranger-analysis`
 RUN_UPSTREAM=1              # C: Upstream: `upstream-analysis`
 RUN_INTEGRATIVE=1           # D: Integrative: `integrative-analysis`
 RUN_CLUSTER=1               # E: Cluster cell calling: `cluster-cell-calling`
-RUN_CELL_TYPES=1            # F: Integration with scRNA-seq: `cell-types-annotation`
-RUN_DE_GO=1                 # G: DE GO analysis: `de-go-analysis`
-RUN_RSHINY=1                # H: R/Shiny app: `rshiny-app`
+RUN_CELL_CONTAMINATION=0    # F: Remove contamination: `cell-contamination-removal-analysis`
+RUN_CELL_TYPES=1            # G: Integration with scRNA-seq: `cell-types-annotation`
+RUN_DE_GO=0                 # H: DE GO analysis: `de-go-analysis`
+RUN_RSHINY=1                # I: R/Shiny app: `rshiny-app`
 
 # ------------------------------------------------------------------------------
 # Heading
@@ -195,9 +197,10 @@ B_DIR="${PROJECT_DIR}/analyses/cellranger-analysis"
 C_DIR="${PROJECT_DIR}/analyses/upstream-analysis"
 D_DIR="${PROJECT_DIR}/analyses/integrative-analysis"
 E_DIR="${PROJECT_DIR}/analyses/cluster-cell-calling"
-F_DIR="${PROJECT_DIR}/analyses/cell-types-annotation"
-G_DIR="${PROJECT_DIR}/analyses/de-go-analysis"
-H_DIR="${PROJECT_DIR}/analyses/rshiny-app"
+F_DIR="${PROJECT_DIR}/analyses/cell-contamination-removal-analysis"
+G_DIR="${PROJECT_DIR}/analyses/cell-types-annotation"
+H_DIR="${PROJECT_DIR}/analyses/de-go-analysis"
+I_DIR="${PROJECT_DIR}/analyses/rshiny-app"
 
 # ------------------------------------------------------------------------------
 # Dynamic progress counter (counts only enabled steps)
@@ -209,6 +212,7 @@ count_enabled() {
   (( RUN_UPSTREAM ))         && ((n++))
   (( RUN_INTEGRATIVE ))      && ((n++))
   (( RUN_CLUSTER ))          && ((n++))
+  (( RUN_CELL_CONTAMINATION ))     && ((n++))
   (( RUN_CELL_TYPES ))  && ((n++))
   (( RUN_DE_GO ))            && ((n++))
   (( RUN_RSHINY ))           && ((n++))
@@ -297,45 +301,57 @@ else
   echo "[–/–] Cluster cell calling (E): SKIPPED"
 fi
 
-
-# F) Cell types annotation 
-if (( RUN_CELL_TYPES )); then
+# F) Cell contamination removal analysis
+if (( RUN_CELL_CONTAMINATION )); then
   bump_step
-  echo "[${STEP}/${TOTAL_STEPS}] Submitting Cell types annotation (F)..."
+  echo "[${STEP}/${TOTAL_STEPS}] Submitting Cell contamination removal analysis (F)..."
   F_DEP=""
   [[ -n "${LAST_JOB}" ]] && F_DEP="done(${LAST_JOB})"
-  JOB_F=$(submit_job "${F_DIR}" "${F_DIR}/lsf-script.txt" "${F_DEP}" "cell-types-annotation")
-  echo "  F(Cell types annotation) = ${JOB_F} ${F_DEP:+(dep: ${F_DEP})}"
+  JOB_F=$(submit_job "${F_DIR}" "${F_DIR}/lsf-script.txt" "${F_DEP}" "cell-contamination-removal-analysis")
+  echo "  F(Cell Contamination) = ${JOB_F} ${F_DEP:+(dep: ${F_DEP})}"
   LAST_JOB="${JOB_F}"
 else
-  echo "[–/–] Cell types annotation (F): SKIPPED"
+  echo "[–/–] Cell contamination removal analysis (F): SKIPPED"
 fi
 
-
-# G) DE GO analysis
-if (( RUN_DE_GO )); then
+# G) Cell types annotation 
+if (( RUN_CELL_TYPES )); then
   bump_step
-  echo "[${STEP}/${TOTAL_STEPS}] Submitting DE GO analysis (G)..."
+  echo "[${STEP}/${TOTAL_STEPS}] Submitting Cell types annotation (G)..."
   G_DEP=""
   [[ -n "${LAST_JOB}" ]] && G_DEP="done(${LAST_JOB})"
-  JOB_G=$(submit_job "${G_DIR}" "${G_DIR}/lsf-script.txt" "${G_DEP}" "DE GO analysis")
-  echo "  G(DE GO) = ${JOB_G} ${G_DEP:+(dep: ${G_DEP})}"
+  JOB_G=$(submit_job "${G_DIR}" "${G_DIR}/lsf-script.txt" "${G_DEP}" "cell-types-annotation")
+  echo "  G(Cell types annotation) = ${JOB_G} ${G_DEP:+(dep: ${G_DEP})}"
   LAST_JOB="${JOB_G}"
 else
-  echo "[–/–] DE GO analysis (G): SKIPPED"
+  echo "[–/–] Cell types annotation (G): SKIPPED"
 fi
 
-# H) R/Shiny app
-if (( RUN_RSHINY )); then
+
+# H) DE GO analysis
+if (( RUN_DE_GO )); then
   bump_step
-  echo "[${STEP}/${TOTAL_STEPS}] Submitting R/Shiny app (H)..."
+  echo "[${STEP}/${TOTAL_STEPS}] Submitting DE GO analysis (H)..."
   H_DEP=""
   [[ -n "${LAST_JOB}" ]] && H_DEP="done(${LAST_JOB})"
-  JOB_H=$(submit_job "${H_DIR}" "${H_DIR}/lsf-script.txt" "${H_DEP}" "R/Shiny app")
-  echo "  H(R/Shiny) = ${JOB_H} ${H_DEP:+(dep: ${H_DEP})}"
+  JOB_H=$(submit_job "${H_DIR}" "${H_DIR}/lsf-script.txt" "${H_DEP}" "DE GO analysis")
+  echo "  H(DE GO) = ${JOB_H} ${H_DEP:+(dep: ${H_DEP})}"
   LAST_JOB="${JOB_H}"
 else
-  echo "[–/–] R/Shiny app (H): SKIPPED"
+  echo "[–/–] DE GO analysis (H): SKIPPED"
+fi
+
+# I) R/Shiny app
+if (( RUN_RSHINY )); then
+  bump_step
+  echo "[${STEP}/${TOTAL_STEPS}] Submitting R/Shiny app (I)..."
+  I_DEP=""
+  [[ -n "${LAST_JOB}" ]] && I_DEP="done(${LAST_JOB})"
+  JOB_I=$(submit_job "${I_DIR}" "${I_DIR}/lsf-script.txt" "${I_DEP}" "R/Shiny app")
+  echo "  I(R/Shiny) = ${JOB_I} ${I_DEP:+(dep: ${I_DEP})}"
+  LAST_JOB="${JOB_I}"
+else
+  echo "[–/–] R/Shiny app (I): SKIPPED"
 fi
 
 # ------------------------------------------------------------------------------
@@ -352,8 +368,9 @@ printf "  B(CellRanger): %s\n"   "${RUN_CELLRANGER:+${JOB_B:-SKIPPED}}"
 printf "  C(Upstream) : %s\n"    "${RUN_UPSTREAM:+${JOB_C:-SKIPPED}}"
 printf "  D(Integrative): %s\n"  "${RUN_INTEGRATIVE:+${JOB_D:-SKIPPED}}"
 printf "  E(Cluster)  : %s\n"    "${RUN_CLUSTER:+${JOB_E:-SKIPPED}}"
-printf "  F(Cell types annotation)  : %s\n"    "${RUN_CELL_TYPES:+${JOB_F:-SKIPPED}}"
-printf "  G(DE GO)    : %s\n"    "${RUN_DE_GO:+${JOB_G:-SKIPPED}}"
-printf "  H(R/Shiny)  : %s\n"    "${RUN_RSHINY:+${JOB_H:-SKIPPED}}"
+printf "  F(Cell contamination): %s\n" "${RUN_CELL_CONTAMINATION:+${JOB_F:-SKIPPED}}"
+printf "  G(Cell types annotation)  : %s\n"    "${RUN_CELL_TYPES:+${JOB_G:-SKIPPED}}"
+printf "  H(DE GO)    : %s\n"    "${RUN_DE_GO:+${JOB_H:-SKIPPED}}"
+printf "  I(R/Shiny)  : %s\n"    "${RUN_RSHINY:+${JOB_I:-SKIPPED}}"
 echo " Final job in chain: ${LAST_JOB:-NONE}"
 echo "============================================================"

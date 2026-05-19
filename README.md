@@ -6,7 +6,7 @@
     <img src="https://www.repostatus.org/badges/latest/active.svg?style=for-the-badge" alt="The project has reached a stable, usable state and is being actively developed." />
   </a>
   <a href="https://github.com/stjude-dnb-binfcore/sc-rna-seq-snap-10x-Flex">
-    <img src="https://img.shields.io/badge/version-1.0.0.beta.3-brightgreen" alt="Version" />
+    <img src="https://img.shields.io/badge/version-1.0.0.beta.4-brightgreen" alt="Version" />
   </a>
 </p>
 
@@ -164,6 +164,7 @@ bash launch_full_pipeline.sh
 
 ```
 ├── analyses
+|  ├── cell-contamination-removal-analysis
 |  ├── cell-types-annotation
 |  ├── cellranger-analysis
 |  ├── cluster-cell-calling

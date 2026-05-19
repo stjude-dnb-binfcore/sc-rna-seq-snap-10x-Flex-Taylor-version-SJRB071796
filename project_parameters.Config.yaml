@@ -116,9 +116,17 @@ resolution_list_find_markers: 0.1 # this will be the single resolution that fits
 n_value_find_markers: 10 # number of top genes to explore
 future_globals_value_clustering: 400 # Default. Adjust based on dataset size and available memory. See `future_globals_value_upstream` in the `upstream-analysis` module for more details.
 
+# `./analyses/cell-contamination-removal-analysis`
+keep_clusters_contamination_module: [1, 2, 3, 4, 5, 7, 8, 9, 10, 12, 13, 15, 16]
+assay_contamination_module: "RNA" # Options: "RNA" (default) or "RNA_SoupX"
+future_globals_value_contamination: 400 # Default. Adjust based on dataset size and available memory. See `future_globals_value_upstream` in the `upstream-analysis` module for more details.
+
 # `./analyses/cell-types-annotation`
-module_with_input_data: "cluster-cell-calling" # Options: "cluster-cell-calling"
-input_data_folder_name: "01_cluster_cell_calling" # Options: "01_cluster_cell_calling" module
+# Input object path: `{root_dir}/analyses/{module_with_input_data}/results/{input_data_folder_name}_{resolution_find_markers}/`.
+# Typical values when contamination was NOT run: module `cluster-cell-calling`, folder prefix `01_cluster_cell_calling`.
+# After contamination removal: module `cell-contamination-removal-analysis`, folder prefix `03_cluster_cell_calling` (matching this module clustering step outputs).
+module_with_input_data: "cluster-cell-calling" # Options: "cluster-cell-calling", "cell-contamination-removal-analysis"
+input_data_folder_name: "01_cluster_cell_calling" # Options: "01_cluster_cell_calling"; use "03_cluster_cell_calling" when `module_with_input_data` is contamination module
 reduction_value_annotation_module: "umap" # Options: For seurat and harmony use: "umap"; For Liger: "glue::glue("{integration_method}")" or "umapndim30nn30" (for cohorts with a single sample or any other name based on the values used for `num_dim_seurat_qc` and `num_neighbors_seurat_qc`
 min.diff.med_value_annotation_module: 0.1 # Higher thresholds for pruning labels correspond to greater assignment certainty
 use_min.diff.med_annotation_module: "NO" # Options: "YES" or "NO" (default)
